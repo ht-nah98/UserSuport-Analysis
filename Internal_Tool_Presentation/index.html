@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Tool Support Optimization</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <div class="presentation-container">
+        
+        <!-- Navigation Controls -->
+        <div class="nav-controls">
+            <button id="prevBtn" class="nav-btn ripple" disabled>
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <button id="nextBtn" class="nav-btn ripple">
+                <span class="material-icons">arrow_forward</span>
+            </button>
+        </div>
+
+        <!-- Slide 1: Introduction -->
+        <section class="slide active" id="slide-1">
+            <div class="slide-content center-content">
+                <div class="brand-chip">
+                    <span class="material-icons">build</span> Đội Ngũ Internal Tools
+                </div>
+                <h1>Hệ Thống Giao Tiếp & Phản Hồi<br><span class="highlight-blue">Lấy User Làm Trọng Tâm</span></h1>
+                <p class="subtitle">Phân tích thực trạng & Đề xuất giải pháp tối ưu hóa trải nghiệm hỗ trợ người dùng</p>
+                <div class="hero-actions">
+                    <button class="primary-btn ripple" onclick="nextSlide()">Bắt đầu phân tích <span class="material-icons">arrow_forward</span></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Context -->
+        <section class="slide" id="slide-2">
+            <div class="slide-header">
+                <h2>Bối Cảnh & Hiện Trạng</h2>
+                <div class="slide-number">01</div>
+            </div>
+            <div class="slide-content">
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon bg-blue-light text-blue">
+                            <span class="material-icons">widgets</span>
+                        </div>
+                        <h3>Về Sản Phẩm</h3>
+                        <ul class="clean-list">
+                            <li><strong>Internal Tools:</strong> Sản phẩm phục vụ nội bộ.</li>
+                            <li><strong>Giai đoạn:</strong> Đã phát hành, đang tìm kiếm người dùng.</li>
+                            <li><strong>User Base:</strong> Phân tán, không tập trung một chỗ.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-red-light text-red">
+                            <span class="material-icons">groups</span>
+                        </div>
+                        <h3>Về Con Người</h3>
+                        <ul class="clean-list">
+                            <li><strong>Nguồn lực mỏng:</strong> Khó hỗ trợ 1-1 từng User.</li>
+                            <li><strong>Giải pháp cũ:</strong> Dùng Stakeholder làm cầu nối (Proxy).</li>
+                            <li><strong>Phân khúc:</strong> Chưa phân loại mức độ sử dụng của User.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-yellow-light text-yellow">
+                            <span class="material-icons">warning</span>
+                        </div>
+                        <h3>Thách Thức</h3>
+                        <ul class="clean-list">
+                            <li>User dùng Tool theo nhiệm vụ, không ở lại lâu.</li>
+                            <li>Thiếu động lực để chủ động gửi Feedback.</li>
+                            <li>Ngại gửi feedback trong 1/nhiều nhóm chung.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Problem Statement -->
+        <section class="slide" id="slide-3">
+            <div class="slide-header">
+                <h2>Vấn Đề Cốt Lõi</h2>
+                <div class="slide-number">02</div>
+            </div>
+            <div class="slide-content split-layout">
+                <div class="problem-box error-state">
+                    <div class="problem-header">
+                        <span class="material-icons error-icon">link_off</span>
+                        <h3>Vấn Đề 1: Luồng Thông Tin Gãy Khúc</h3>
+                    </div>
+                    <p class="problem-desc">Thông tin từ Team không đến được trực tiếp User cuối.</p>
+                    <div class="flow-diagram">
+                        <span class="badge">Team Dev</span>
+                        <span class="arrow material-icons">arrow_forward</span>
+                        <span class="badge warning">Stakeholder</span>
+                        <span class="arrow material-icons">arrow_forward</span>
+                        <span class="badge error">User (Bị bỏ lỡ)</span>
+                    </div>
+                    <ul class="impact-list">
+                        <li>User không biết tính năng mới.</li>
+                        <li>User thiếu tài liệu hướng dẫn kịp thời.</li>
+                        <li>Thông tin bị không đầy đủ.</li>
+                        <li>Không có không gian, thời gian theo dõi thường xuyên.</li>
+                        <li>Không thể giải đáp thông tin cụ thể, kịp thời nhanh chóng cho từng user</li>
+                    </ul>
+                </div>
+
+                <div class="problem-box error-state">
+                    <div class="problem-header">
+                        <span class="material-icons error-icon">feedback</span>
+                        <h3>Vấn Đề 2: Feedback "Lạc Trôi"</h3>
+                    </div>
+                    <p class="problem-desc">Tiếng nói của User bị phân mảnh và mất dấu.</p>
+                    <div class="channels-chaos">
+                        <span class="mini-badge">Nhắn tin Dev</span>
+                        <span class="mini-badge">Discord</span>
+                        <span class="mini-badge">Họp</span>
+                        <span class="mini-badge">Email</span>
+                    </div>
+                    <div class="chaos-arrow">
+                        <span class="material-icons">arrow_downward</span>
+                    </div>
+                    <div class="badge black">Không có hệ thống theo dõi (Tracking)</div>
+                    <ul class="impact-list" style="margin-top: 10px">
+                        <li>Feedback không được ghi nhận tập trung.</li>
+                        <li>Khó ưu tiên xử lý.</li>
+                        <li>Không đo lường được hiệu quả hỗ trợ.</li>
+                        <li>Không hỗ trợ tư vấn kịp thời</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Summary of Impact -->
+        <section class="slide" id="slide-4">
+             <div class="slide-content center-content">
+                <h2 class="impact-title">Hệ Quả Thực Tế?</h2>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value text-red">Cao</div>
+                        <div class="stat-label">Chi phí giao tiếp</div>
+                        <div class="stat-desc">Tốn nhiều thời gian hỗ trợ thủ công.</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-value text-grey">Thấp</div>
+                        <div class="stat-label">Tinh thần làm chủ (Ownership)</div>
+                        <div class="stat-desc">User coi Tool là "của ai đó", không phải công cụ của họ.</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-value text-yellow">Chậm</div>
+                        <div class="stat-label">Vòng lặp phản hồi (Feedback Loop)</div>
+                        <div class="stat-desc">Lỗi và cải tiến mất nhiều thời gian để đến tay đội Dev.</div>
+                    </div>
+                </div>
+                <div class="next-step-prompt">
+                    <p>Tại sao lại xảy ra điều này? Hãy cùng đi sâu phân tích.</p>
+                    <button class="secondary-btn ripple" onclick="alert('Phần sau: Phân tích 5 Whys - Đang cập nhật...')">Xem Phân Tích</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Transition to Analysis -->
+        <section class="slide" id="slide-5">
+            <div class="slide-content center-content">
+                <div class="icon-circle bg-blue-light text-blue mb-4">
+                    <span class="material-icons" style="font-size: 48px;">psychology</span>
+                </div>
+                <h2>Đi Sâu Phân Tích</h2>
+                <h1>Phương Pháp  (5 Whys)</h1>
+                <p class="subtitle">Để giải quyết triệt để, chúng ta không chỉ nhìn bề mặt.<br>Cần liên tục hỏi "Tại sao?" để tìm ra nguyên nhân gốc rễ thực sự.</p>
+                <div class="method-explanation">
+                    <div class="method-card">
+                        <h4>Phương pháp 5 Whys là gì?</h4>
+                        <p>Một kỹ thuật phân tích vấn đề bằng cách hỏi "Tại sao?" liên tục (thường 5 lần) cho đến khi tìm ra nguyên nhân gốc rễ (Root Cause) - thay vì chỉ xử lý triệu chứng.</p>
+                    </div>
+                </div>
+                <div class="analysis-branches mt-4">
+                    <div class="branch-card">
+                        <span class="material-icons">share</span>
+                        <div class="branch-info">
+                            <span class="branch-title">Nhánh 1: Luồng Thông Tin</span>
+                            <span class="branch-desc">Tại sao thông tin không đến được User?</span>
+                        </div>
+                    </div>
+                    <div class="branch-card">
+                        <span class="material-icons">feedback</span>
+                        <div class="branch-info">
+                            <span class="branch-title">Nhánh 2: Luồng Phản Hồi</span>
+                            <span class="branch-desc">Tại sao Feedback bị phân mảnh?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: 5 Whys - Branch 1 (Full Detail) -->
+        <section class="slide scrollable-slide" id="slide-6">
+            <div class="slide-header">
+                <div>
+                    <div class="badge-pill blue">Nhánh 1</div>
+                    <h2>Tại sao thông tin từ Tool không đến được User cuối?</h2>
+                </div>
+                <div class="slide-number">03</div>
+            </div>
+            <div class="slide-content">
+                <p class="accordion-hint"><span class="material-icons">touch_app</span> Click vào từng câu hỏi để xem chi tiết trả lời</p>
+                <div class="whys-accordion">
+                    <!-- Why 1 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">1</div>
+                            <h3>Tại sao các Tool thường cập nhật thông qua Stakeholder thay vì User cuối?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Vì Stakeholder đóng vai trò:</p>
+                                <ul>
+                                    <li>Đại diện User làm việc với Team phát triển</li>
+                                    <li>Yêu cầu tính năng và quyết định yêu cầu nghiệp vụ</li>
+                                    <li>Tham gia review và phản hồi trong quá trình xây dựng</li>
+                                    <li>Là đầu mối mặc định cho mọi trao đổi về sản phẩm</li>
+                                </ul>
+                                <div class="consequence-box">
+                                    <span class="material-icons">warning</span>
+                                    <div>
+                                        <strong>Hệ quả:</strong> Stakeholder trở thành "lớp trung gian" (Proxy Layer). Thông tin phải đi qua: <code>Team Dev → Stakeholder → User</code> → Gây chậm trễ và thông tin, khó truyền tải thông điệp cho khách hàng.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 2 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">2</div>
+                            <h3>Tại sao Stakeholder là đầu mối duy nhất, còn User cuối không tham gia sớm?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Vì User cuối:</p>
+                                <ul>
+                                    <li>Không được tiếp cận Roadmap, tiến độ hay bản Preview</li>
+                                    <li>Không có "không gian chính thức" để biết Tool đang phát triển gì</li>
+                                    <li>Không thể phản hồi trước khi Tool được phát hành</li>
+                                </ul>
+                                <div class="consequence-box">
+                                    <span class="material-icons">warning</span>
+                                    <div>
+                                        <strong>Kết quả:</strong> User chỉ biết Tool <strong>KHI ĐÃ RELEASE</strong>. Feedback đến muộn → Chi phí sửa đổi cao. Mô hình hiện tại là "Build first, announce later".
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 3 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">3</div>
+                            <h3>Tại sao User không có không gian để theo dõi và phản hồi sớm?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Vì hiện tại:</p>
+                                <ul>
+                                    <li>Không có kênh giao tiếp chính thức dành riêng cho User cuối</li>
+                                    <li>Cập nhật bị gộp chung vào Discord đa phòng ban, kênh Stakeholder, hoặc trao đổi rời rạc</li>
+                                </ul>
+                                <div class="insight-box critical">
+                                    <span class="material-icons">lightbulb</span>
+                                    <div>
+                                        <strong>Nhận định then chốt:</strong> Mô hình giao tiếp đang là <strong>STAKEHOLDER-CENTRIC</strong>, không phải <strong>USER-CENTRIC</strong>. User không có tiếng nói trong quá trình phát triển.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 4 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">4</div>
+                            <h3>Tại sao Discord không giải quyết được vai trò cập nhật cho User?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Discord gặp vấn đề cấu trúc:</p>
+                                <div class="sub-points-grid">
+                                    <div class="sub-point">
+                                        <strong>4.1. Quá nhiều kênh</strong>
+                                        <p>Thông báo, thảo luận, hỏi nhanh, feedback lẫn lộn</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>4.2. Tin nhắn dễ bị trôi</strong>
+                                        <p>Announcement bị đẩy xuống bởi các cuộc hội thoại, không có cơ chế ghim/nổi bật</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>4.3. Hiệu ứng Domino</strong>
+                                        <p>User phản hồi → Đẩy trôi thông báo → Tạo nhiễu cho thông báo tiếp theo</p>
+                                    </div>
+                                </div>
+                                <div class="insight-box">
+                                    <span class="material-icons">info</span>
+                                    <div>Discord được thiết kế cho <strong>hội thoại thời gian thực</strong>, không phải <strong>giao tiếp có cấu trúc</strong>.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 5 - Root -->
+                    <div class="accordion-item root-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker warning">5</div>
+                            <h3>Tại sao ngay cả khi có cập nhật, User vẫn không tiếp nhận đầy đủ?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong></p>
+                                <div class="sub-points-grid">
+                                    <div class="sub-point">
+                                        <strong>5.1. User không đồng nhất</strong>
+                                        <p>Nhiều User chỉ dùng Tool theo nhiệm vụ (occasional), dùng xong là rời, không có động lực theo dõi.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>5.2. Không gắn với vòng đời User</strong>
+                                        <p>Cập nhật đang được "broadcast đại trà", không theo ngữ cảnh (contextual), không cá nhân hóa (personalized), không đúng lúc (timely).</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>5.3. Notification Fatigue</strong>
+                                        <p>Quá nhiều thông báo từ nhiều kênh → User tắt thông báo hoặc bỏ qua.</p>
+                                    </div>
+                                </div>
+                                <div class="root-cause-box">
+                                    <span class="rc-label">ROOT CAUSE</span>
+                                    <p>User không có <strong>"Điểm Chạm (Touchpoint) Ổn Định"</strong> với Tool. Giao tiếp không được tích hợp vào quy trình làm việc của User.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: 5 Whys - Branch 2 (Full Detail) -->
+        <section class="slide scrollable-slide" id="slide-7">
+            <div class="slide-header">
+                <div>
+                    <div class="badge-pill red">Nhánh 2</div>
+                    <h2>Tại sao Feedback bị phân mảnh và mất dấu?</h2>
+                </div>
+                <div class="slide-number">04</div>
+            </div>
+            <div class="slide-content">
+                <p class="accordion-hint"><span class="material-icons">touch_app</span> Click vào từng câu hỏi để xem chi tiết trả lời</p>
+                <div class="whys-accordion">
+                    <!-- Why 1 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">1</div>
+                            <h3>Tại sao User thường liên hệ trực tiếp với Dev/PO thay vì qua kênh chung?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Vì User cảm nhận rằng:</p>
+                                <ul>
+                                    <li>Đây là vấn đề <strong>"cần xử lý ngay"</strong></li>
+                                    <li>Liên hệ trực tiếp sẽ được <strong>ưu tiên hơn</strong></li>
+                                    <li>Nhanh hơn (không cần chờ ai đó xem trong group)</li>
+                                    <li>Tránh việc thông tin bị trôi trong nhóm chung</li>
+                                </ul>
+                                <div class="quote-box">
+                                    <span class="material-icons">format_quote</span>
+                                    "Nếu tôi DM dev, dev sẽ thấy ngay. Nếu tôi post lên group, ai biết có ai thấy không?"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 2 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">2</div>
+                            <h3>Tại sao User cho rằng kênh chung không hiệu quả?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Trả lời:</strong> Vì nhóm chung:</p>
+                                <ul>
+                                    <li><strong>Quá đông</strong> → Tin nhắn bị chôn vùi</li>
+                                    <li><strong>Nhiều loại nội dung lẫn lộn</strong> (announcement, discussion, issues)</li>
+                                    <li><strong>Không có cam kết rõ ràng:</strong> Ai sẽ đọc? Khi nào được xử lý? Trạng thái đến đâu?</li>
+                                </ul>
+                                <div class="insight-box critical">
+                                    <span class="material-icons">lightbulb</span>
+                                    <div><strong>Insight:</strong> User không tin rằng feedback của mình được ghi nhận một cách hệ thống.</div>
+                                </div>
+                                <div class="vicious-cycle">
+                                    <span class="cycle-title">Vòng xoáy tiêu cực:</span>
+                                    <div class="cycle-flow">
+                                        <span>User không tin kênh chung</span>
+                                        <span class="material-icons">arrow_forward</span>
+                                        <span>User DM trực tiếp Dev</span>
+                                        <span class="material-icons">arrow_forward</span>
+                                        <span>Kênh chung càng ít người dùng</span>
+                                        <span class="material-icons">arrow_forward</span>
+                                        <span>Kênh chung càng không có giá trị</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 3 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">3</div>
+                            <h3>Tại sao Feedback không được ghi nhận tập trung?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <div class="sub-points-grid">
+                                    <div class="sub-point">
+                                        <strong>3.1. Không có Single Source of Truth</strong>
+                                        <p>Issue đến từ: DM, Discord, Stakeholder, email, chat trực tiếp - nhưng không có hệ thống tập trung để log.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>3.2. Hành vi của Dev/PO</strong>
+                                        <p>Thường "xử lý nhanh cho xong". Việc nhỏ → fix luôn, không log lại. Không có quy trình bắt buộc ghi nhận.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>3.3. Hệ quả</strong>
+                                        <p>Không biết: Có bao nhiêu issues? Issues nào đã fix/đang pending? Pattern gì đang xuất hiện?</p>
+                                    </div>
+                                </div>
+                                <div class="consequence-box">
+                                    <span class="material-icons">warning</span>
+                                    <div><strong>Rủi ro vận hành:</strong> Không tracking = Không có visibility = Không tối ưu được quy trình hỗ trợ.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 4 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker">4</div>
+                            <h3>Tại sao PO gặp khó khăn trong việc tổng hợp issue từ User?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <div class="sub-points-grid">
+                                    <div class="sub-point">
+                                        <strong>4.1. Issue đến từ nhiều nguồn</strong>
+                                        <p>Dev nhận DM → fix → không báo PO. Stakeholder forward yêu cầu → PO không thấy context. Discord có người hỏi → ai đó trả lời → không ai log.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>4.2. Thiếu hệ thống & process</strong>
+                                        <p>Không có: Form chuẩn để submit, Ticket system cho end-users, Nhãn phân loại (bug/feature/question), SLA commitment.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>4.3. PO phải "manual aggregation"</strong>
+                                        <p>Nhớ bằng trí nhớ, hỏi lại dev: "Tuần này có ai báo bug gì không?", hỏi stakeholder: "Bên em có user phàn nàn gì không?"</p>
+                                    </div>
+                                </div>
+                                <div class="insight-box">
+                                    <span class="material-icons">info</span>
+                                    <div><strong>Insight:</strong> Đây là <strong>Process Debt</strong> (Nợ quy trình), không phải vấn đề cá nhân của PO.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Why 5 - Root -->
+                    <div class="accordion-item root-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <div class="step-marker error">5</div>
+                            <h3>Tại sao User lại biết rõ Dev là ai để liên hệ trực tiếp?</h3>
+                            <span class="material-icons accordion-icon">expand_more</span>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="step-answer">
+                                <p><strong>Nguyên nhân không nằm ở User, mà nằm ở:</strong></p>
+                                <div class="sub-points-grid">
+                                    <div class="sub-point">
+                                        <strong>5.1. Cách tổ chức Team</strong>
+                                        <p>Dev có thể tham gia demo/training → User biết mặt. Dev đã support User trước đó → User lưu contact.</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>5.2. Cách Stakeholder giới thiệu</strong>
+                                        <p>"Anh X làm tool này, có gì hỏi anh ấy nhé". Share contact Dev cho User "để tiện".</p>
+                                    </div>
+                                    <div class="sub-point">
+                                        <strong>5.3. Văn hóa "hỏi người làm cho nhanh"</strong>
+                                        <p>Văn hóa internal: quan hệ cá nhân > process. "Hỏi thẳng cho nhanh" > "Submit ticket chờ xử lý".</p>
+                                    </div>
+                                </div>
+                                <div class="root-cause-box">
+                                    <span class="rc-label">ROOT CAUSE</span>
+                                    <p>Thiếu <strong>Ranh Giới (Boundary)</strong> giữa Dev và User. Feedback không có <strong>"điểm rơi mặc định"</strong> (official channel). Thiếu hệ thống Tracking công khai cho User.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Full Root Causes Summary -->
+        <section class="slide scrollable-slide" id="slide-8">
+            <div class="slide-header">
+                <h2>Tổng Hợp 10 Nguyên Nhân Gốc (Root Causes)</h2>
+                <div class="slide-number">05</div>
+            </div>
+            <div class="slide-content">
+                <p class="section-intro">Từ phân tích 5 Whys, chúng ta xác định được <strong>10 Root Causes</strong> được tổ chức thành <strong>4 nhóm</strong>:</p>
+
+                <div class="rc-groups-container">
+                    <!-- Group 1 -->
+                    <div class="rc-group">
+                        <div class="rc-group-header bg-blue-light">
+                            <span class="material-icons text-blue">cell_tower</span>
+                            <h4>Nhóm 1: Hạ Tầng Giao Tiếp</h4>
+                        </div>
+                        <div class="rc-group-content">
+                            <div class="rc-item"><span class="rc-code">RC1</span> Mô hình Stakeholder-Centric: Luồng thông tin xoay quanh Stakeholder, không phải User cuối.</div>
+                            <div class="rc-item"><span class="rc-code">RC2</span> Thiếu hạ tầng giao tiếp trực tiếp với User: Không có kênh chính thức, ổn định.</div>
+                            <div class="rc-item"><span class="rc-code">RC3</span> Discord không phù hợp: Thiết kế cho chat, không cho thông báo/tài liệu có cấu trúc.</div>
+                            <div class="rc-item"><span class="rc-code">RC5</span> User không có điểm chạm ổn định: Không có "home" (cổng thông tin, hub) cho Tool.</div>
+                        </div>
+                    </div>
+                    <!-- Group 2 -->
+                    <div class="rc-group">
+                        <div class="rc-group-header bg-green-light">
+                            <span class="material-icons text-green">people</span>
+                            <h4>Nhóm 2: Tương Tác & Ngữ Cảnh User</h4>
+                        </div>
+                        <div class="rc-group-content">
+                            <div class="rc-item"><span class="rc-code">RC4</span> Broadcast thay vì Contextual: Cập nhật gửi đại trà, không theo hành vi/nhu cầu User.</div>
+                            <div class="rc-item"><span class="rc-code">RC9</span> Thiếu SLA & Cam kết: User không biết bao lâu sẽ được xử lý → Mất niềm tin.</div>
+                        </div>
+                    </div>
+                    <!-- Group 3 -->
+                    <div class="rc-group">
+                        <div class="rc-group-header bg-yellow-light">
+                            <span class="material-icons text-yellow">receipt_long</span>
+                            <h4>Nhóm 3: Theo Dõi Issue & Quy Trình</h4>
+                        </div>
+                        <div class="rc-group-content">
+                            <div class="rc-item"><span class="rc-code">RC6</span> Feedback không có "điểm rơi mặc định": Không có kênh chính thức để gửi issue.</div>
+                            <div class="rc-item"><span class="rc-code">RC7</span> Thiếu Issue Tracking System công khai: Không có ticket system cho User cuối.</div>
+                            <div class="rc-item"><span class="rc-code">RC8</span> Luồng thông tin bị phân mảnh: Issue đến từ nhiều nguồn không đồng bộ.</div>
+                        </div>
+                    </div>
+                    <!-- Group 4 -->
+                    <div class="rc-group">
+                        <div class="rc-group-header bg-red-light">
+                            <span class="material-icons text-red">engineering</span>
+                            <h4>Nhóm 4: Ranh Giới & Quy Trình Làm Việc</h4>
+                        </div>
+                        <div class="rc-group-content">
+                            <div class="rc-item"><span class="rc-code">RC10</span> Thiếu Ranh Giới giữa Dev và User: Dev tiếp xúc trực tiếp, không qua quy trình → Dev bị ngắt quãng, PO mất kiểm soát.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Key Patterns -->
+        <section class="slide" id="slide-9">
+            <div class="slide-header">
+                <h2>Các Mẫu Hình (Patterns) Quan Trọng</h2>
+                <div class="slide-number">06</div>
+            </div>
+            <div class="slide-content">
+                <p class="section-intro">Phân tích Root Causes cho thấy 4 mẫu hình lặp lại:</p>
+                <div class="patterns-grid">
+                    <div class="pattern-card">
+                        <div class="pattern-icon"><span class="material-icons">source</span></div>
+                        <h4>Pattern 1: Thiếu "Single Source of Truth"</h4>
+                        <ul>
+                            <li>Cho thông báo → Không có Changelog/Release Notes tập trung</li>
+                            <li>Cho issue → Không có Ticket System</li>
+                            <li>Cho tài liệu → Không có Knowledge Base</li>
+                        </ul>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon"><span class="material-icons">campaign</span></div>
+                        <h4>Pattern 2: Push thay vì Pull</h4>
+                        <ul>
+                            <li>Đang dùng <strong>Push</strong> (broadcast Discord)</li>
+                            <li>Thiếu <strong>Pull</strong> (User tự tra cứu khi cần)</li>
+                        </ul>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon"><span class="material-icons">sync_problem</span></div>
+                        <h4>Pattern 3: Không có Feedback Loop</h4>
+                        <div class="broken-loop">
+                            <span>Cập nhật Tool</span>
+                            <span class="material-icons">arrow_forward</span>
+                            <span>Thông báo</span>
+                            <span class="material-icons">arrow_forward</span>
+                            <span class="missing">??? (Missing)</span>
+                            <span class="material-icons">arrow_forward</span>
+                            <span>Cập nhật tiếp</span>
+                        </div>
+                        <p class="pattern-note">Thiếu: User có nhận không? Có áp dụng được không? Có gặp vấn đề gì không?</p>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon"><span class="material-icons">handyman</span></div>
+                        <h4>Pattern 4: Process Debt (Nợ Quy Trình)</h4>
+                        <ul>
+                            <li>Không có tự động hóa</li>
+                            <li>Dựa vào công sức thủ công</li>
+                            <li>Không mở rộng được khi có nhiều Tool/User hơn</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="hero-actions mt-5">
+                    <button class="primary-btn ripple" onclick="nextSlide()">Xem Phân Tích Pareto 80/20 <span class="material-icons">arrow_forward</span></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Pareto Intro -->
+        <section class="slide" id="slide-10">
+            <div class="slide-content center-content">
+                <div class="icon-circle bg-yellow-light text-yellow mb-4">
+                    <span class="material-icons" style="font-size: 48px;">insights</span>
+                </div>
+                <h2>Phân Tích Ưu Tiên</h2>
+                <h1>Nguyên Tắc Pareto 80/20</h1>
+                <p class="subtitle">Tìm ra <strong>20% nguyên nhân gốc</strong> gây ra <strong>80% vấn đề</strong><br>để tập trung nguồn lực hiệu quả nhất.</p>
+                <div class="pareto-intro-grid">
+                    <div class="pareto-intro-card">
+                        <span class="material-icons">center_focus_strong</span>
+                        <h4>Focus</h4>
+                        <p>Tập trung vào điểm có tác động cao nhất</p>
+                    </div>
+                    <div class="pareto-intro-card">
+                        <span class="material-icons">bolt</span>
+                        <h4>Efficiency</h4>
+                        <p>Giải quyết hiệu quả với nỗ lực tối ưu</p>
+                    </div>
+                    <div class="pareto-intro-card">
+                        <span class="material-icons">trending_up</span>
+                        <h4>Breakthrough</h4>
+                        <p>Tạo đột phá cho toàn hệ thống</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Group Root Causes -->
+        <section class="slide scrollable-slide" id="slide-11">
+            <div class="slide-header">
+                <h2>Gom Nhóm 10 Root Causes → 6 Nhóm Logic</h2>
+                <div class="slide-number">07</div>
+            </div>
+            <div class="slide-content">
+                <div class="groups-grid">
+                    <div class="group-card group-a">
+                        <div class="group-header">
+                            <span class="group-letter">A</span>
+                            <h4>Mô hình giao tiếp lệch trọng tâm (RC1)</h4>
+                        </div>
+                        <p>Công cụ đang giao tiếp theo kiểu <strong>lấy “người đại diện” làm trung tâm;</strong>, người dùng cuối thường chỉ biết khi tính năng đã phát hành.</p>
+                        <div class="group-tag">RC1</div>
+                    </div>
+                    <div class="group-card group-b">
+                        <div class="group-header">
+                            <span class="group-letter">B</span>
+                            <h4>Không có điểm chạm cố định (RC2, RC5)</h4>
+                        </div>
+                        <p>Người dùng dùng xong là “mất hút”. Không có một nơi cố định để xem cập nhật, đọc tài liệu hướng dẫn, và gửi phản hồi.</p>
+                        <div class="group-tag">RC2, RC5</div>
+                    </div>
+                    <div class="group-card group-c">
+                        <div class="group-header">
+                            <span class="group-letter">C</span>
+                            <h4>Discord Không Phù Hợp</h4>
+                        </div>
+                        <p>Quá nhiều kênh nên tin nhắn bị trôi, và cập nhật / phản hồi / thảo luận bị lẫn lộn.</p>
+                        <div class="group-tag">RC3</div>
+                    </div>
+                    <div class="group-card group-d">
+                        <div class="group-header">
+                            <span class="group-letter">D</span>
+                            <h4>Phản hồi bị phân mảnh</h4>
+                        </div>
+                        <p>Người dùng phản hồi qua nhiều nơi: lập trình viên, chủ sản phẩm (PO), người đại diện, Discord… nên không có “điểm rơi” mặc định để tập trung lại.</p>
+                        <div class="group-tag">RC6, RC8</div>
+                    </div>
+                    <div class="group-card group-e">
+                        <div class="group-header">
+                            <span class="group-letter">E</span>
+                            <h4>Không có nguồn thông tin chuẩn duy nhất</h4>
+                        </div>
+                        <p>Vấn đề xử lý xong rồi biến mất. Không ghi nhật ký, không đo lường, nên không thể tối ưu..</p>
+                        <div class="group-tag">RC7</div>
+                    </div>
+                    <div class="group-card group-f">
+                        <div class="group-header">
+                            <span class="group-letter">F</span>
+                            <h4>Văn Hóa "Hỏi Dev Cho Nhanh"</h4>
+                        </div>
+                        <p>Người dùng biết ai là lập trình viên và hỏi trực tiếp; không có quy tắc rõ ràng, khiến lập trình viên bị làm phiền/gián đoạn liên tục.</p>
+                        <div class="group-tag">RC10</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Impact Score Chart -->
+        <section class="slide" id="slide-12">
+            <div class="slide-header">
+                <h2>Đánh Giá Impact Score (Điểm Tác Động)</h2>
+                <div class="slide-number">08</div>
+            </div>
+            <div class="slide-content">
+                <div class="chart-container">
+                    <div class="chart-explanation">
+                        <h4>Framework Đánh Giá</h4>
+                        <p>Mỗi nhóm được chấm điểm theo 4 tiêu chí:</p>
+                        <ul>
+                            <li><strong>Severity</strong> - Mức độ nghiêm trọng (35%)</li>
+                            <li><strong>Frequency</strong> - Tần suất xảy ra (25%)</li>
+                            <li><strong>Ripple Effect</strong> - Hiệu ứng lan tỏa (30%)</li>
+                            <li><strong>Feasibility</strong> - Tính khả thi (10%)</li>
+                        </ul>
+                        <p><strong>Lưu ý:</strong>Hiện tại chưa có khảo sát chính thức để đánh giá. Nên dựa vào ý nghĩ chủ quan tự tạo ra thông số để phân tích.</p>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="chart-title">Impact Score Rankings</div>
+                        <div class="bar-item">
+                            <div class="bar-label">
+                                <span class="rank rank-1">🥇</span>
+                                <span>B - Thiếu Touchpoint</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-1" style="width: 87%;">
+                                    <span class="bar-value">8.70</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">
+                                <span class="rank rank-2">🥈</span>
+                                <span>A - Stakeholder-Centric</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-2" style="width: 84.5%;">
+                                    <span class="bar-value">8.45</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">
+                                <span class="rank rank-3">🥉</span>
+                                <span>E - Không có Tracking</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-3" style="width: 80%;">
+                                    <span class="bar-value">8.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-item dimmed">
+                            <div class="bar-label">
+                                <span class="rank">4</span>
+                                <span>D - Feedback Phân Mảnh</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-dim" style="width: 77.5%;">
+                                    <span class="bar-value">7.75</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-item dimmed">
+                            <div class="bar-label">
+                                <span class="rank">5</span>
+                                <span>C - Vấn đề Discord</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-dim" style="width: 72%;">
+                                    <span class="bar-value">7.20</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bar-item dimmed">
+                            <div class="bar-label">
+                                <span class="rank">6</span>
+                                <span>F - Văn hóa "hỏi nhanh"</span>
+                            </div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-dim" style="width: 60.5%;">
+                                    <span class="bar-value">6.05</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pareto-line">
+                            <span>Top 3 = 80% Impact</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Top 3 Detail Cards -->
+        <section class="slide" id="slide-13">
+            <div class="slide-header">
+                <h2>Top 3 Root Causes Cần Giải Quyết</h2>
+                <div class="slide-number">09</div>
+            </div>
+            <div class="slide-content">
+                <div class="top3-grid">
+                    <!-- #1 -->
+                    <div class="top3-card gold">
+                        <div class="top3-rank">🥇 #1</div>
+                        <div class="top3-score">8.70</div>
+                        <h3>Thiếu “điểm chạm” cố định cho người dùng</h3>
+                        <div class="top3-role">FOUNDATIONAL - NỀN TẢNG</div>
+                        <p>Người dùng không có một “ngôi nhà chung” để xem cập nhật, đọc tài liệu hướng dẫn, và gửi phản hồi. Đây là yếu tố then chốt để mở khóa mọi giải pháp khác.</p>
+                        <div class="top3-why">
+                            <strong>Tại sao #1?</strong>
+                            <ul>
+                                <li>Hiệu ứng lan tỏa lớn nhất (10/10)</li>
+                                <li>“Gốc của mọi gốc rễ”: thiếu cái này thì các phần khác đều phải làm giải pháp tạm bợ</li>
+                                <li>Sửa được điểm này → mở khóa giải pháp cho A, C, D, E</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- #2 -->
+                    <div class="top3-card silver">
+                        <div class="top3-rank">🥈 #2</div>
+                        <div class="top3-score">8.45</div>
+                        <h3>Giao tiếp xoay quanh “bên liên quan” (Stakeholder) thay vì người dùng</h3>
+                        <div class="top3-role">CHIẾN LƯỢC - TRIẾT LÝ</div>
+                        <p>Luồng thông tin chủ yếu đi vòng quanh stakeholder, người dùng không có tiếng nói. Cần chuyển từ:
+“xây cho stakeholder” → “xây cùng người dùng”.</p>
+                        <div class="top3-why">
+                            <strong>Tại sao #2?</strong>
+                            <ul>
+                                <li>Xảy ra thường xuyên nhất (10/10)</li>
+                                <li>Đây là lựa chọn về thiết kế/cách làm, không phải bị giới hạn kỹ thuật</li>
+                                <li>Sửa được điểm này → công cụ/hệ thống sẽ khớp đúng nhu cầu người dùng thật</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- #3 -->
+                    <div class="top3-card bronze">
+                        <div class="top3-rank">🥉 #3</div>
+                        <div class="top3-score">8.00</div>
+                        <h3>Không có “nguồn dữ liệu duy nhất đáng tin” (Single Source of Truth)</h3>
+                        <div class="top3-role">VẬN HÀNH</div>
+                        <p>Vấn đề/sự cố không được ghi nhận (log), không đo được số lượng, thời gian xử lý, mẫu lặp (pattern).
+Không có dữ liệu → không thể tối ưu.</p>
+                        <div class="top3-why">
+                            <strong>Tại sao #3?</strong>
+                            <ul>
+                                <li>Mức độ ảnh hưởng/rủi ro vận hành cao nhất (9/10)</li>
+                                <li>Cho phép ra quyết định dựa trên dữ liệu</li>
+                                <li>Là chìa khóa để cải tiến liên tục (continuous improvement)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: Relationship Diagram -->
+        <section class="slide" id="slide-14">
+            <div class="slide-header">
+                <h2>Mối Quan Hệ Giữa Top 3 - Cascade Effect</h2>
+                <div class="slide-number">10</div>
+            </div>
+            <div class="slide-content center-content">
+                <div class="cascade-diagram">
+                    <div class="cascade-foundation">
+                        <div class="cascade-box foundation-box">
+                            <div class="cascade-label">🏗️ FOUNDATION</div>
+                            <h3>B: Touchpoint / User Hub</h3>
+                            <p>Xây Portal/Platform là nền tảng để implement mọi giải pháp khác</p>
+                        </div>
+                    </div>
+                    <div class="cascade-connector">
+                        <div class="connector-line"></div>
+                        <span class="connector-label">Enables</span>
+                    </div>
+                    <div class="cascade-branches">
+                        <div class="cascade-box strategy-box">
+                            <div class="cascade-label">🎯 STRATEGY</div>
+                            <h3>A: User-Centric Model</h3>
+                            <p>Có touchpoint → giao tiếp trực tiếp với Users</p>
+                        </div>
+                        <div class="cascade-plus">+</div>
+                        <div class="cascade-box ops-box">
+                            <div class="cascade-label">📊 OPERATIONAL</div>
+                            <h3>E: Issue Tracking</h3>
+                            <p>Có platform → tích hợp tracking vào đó</p>
+                        </div>
+                    </div>
+                    <div class="cascade-connector">
+                        <div class="connector-line"></div>
+                        <span class="connector-label">Auto-resolves</span>
+                    </div>
+                    <div class="cascade-result">
+                        <div class="resolved-items">
+                            <span class="resolved-item">C: Discord Issue ✓</span>
+                            <span class="resolved-item">D: Feedback Phân Mảnh ✓</span>
+                            <span class="resolved-item">F: Văn hóa "hỏi nhanh" ✓</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cascade-summary">
+                    <span class="material-icons">lightbulb</span>
+                    <p><strong>Kết luận:</strong> Fix <strong>30%</strong> (Top 3) sẽ giải quyết <strong>75-85%</strong> toàn bộ vấn đề!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: What NOT to do -->
+        <section class="slide" id="slide-15">
+            <div class="slide-header">
+                <h2>⚠️ Những Gì KHÔNG NÊN Làm Trước</h2>
+                <div class="slide-number">11</div>
+            </div>
+            <div class="slide-content">
+                <p class="section-intro">Pareto cũng giúp xác định những gì <strong>không nên ưu tiên</strong> vì chúng là triệu chứng (symptom) hoặc hệ quả (consequence):</p>
+                <div class="donot-grid">
+                    <div class="donot-card">
+                        <div class="donot-header">
+                            <span class="donot-number">1</span>
+                            <h4>❌ Đừng "Fix Discord"</h4>
+                        </div>
+                        <div class="donot-why">
+                            <strong>Tại sao không?</strong>
+                            <ul>
+                                <li>Discord là symptom  không phải root cause</li>
+                                <li>Đổi Discord → Slack → Teams vẫn vậy</li>
+                                <li>Discord bị dùng sai vai trò (announcement + discussion + tracking)</li>
+                            </ul>
+                        </div>
+                        <div class="donot-when">
+                            <span class="material-icons">schedule</span>
+                            <span>Làm sau khi có Touchpoint (Phase 1)</span>
+                        </div>
+                    </div>
+                    <div class="donot-card">
+                        <div class="donot-header">
+                            <span class="donot-number">2</span>
+                            <h4>❌ Đừng set rule "Không được hỏi Dev"</h4>
+                        </div>
+                        <div class="donot-why">
+                            <strong>Tại sao không?</strong>
+                            <ul>
+                                <li>Là hệ quả của việc không có nơi report chính thức</li>
+                                <li>Fix văn hóa trực tiếp sẽ backfire (User frustrated)</li>
+                                <li>Set rule mà không có alternative → tệ hơn</li>
+                            </ul>
+                        </div>
+                        <div class="donot-when">
+                            <span class="material-icons">schedule</span>
+                            <span>Tự giải quyết khi có Touchpoint + Tracking</span>
+                        </div>
+                    </div>
+                    <div class="donot-card">
+                        <div class="donot-header">
+                            <span class="donot-number">3</span>
+                            <h4>⚠️ Đừng ưu tiên D riêng lẻ</h4>
+                        </div>
+                        <div class="donot-why">
+                            <strong>Tại sao không?</strong>
+                            <ul>
+                                <li>Feedback phân mảnh depends on B (cần có touchpoint làm nền)</li>
+                                <li>Là symptom của việc không có official channel</li>
+                                <li>Sẽ được giải quyết tự nhiên khi implement B + E</li>
+                            </ul>
+                        </div>
+                        <div class="donot-when">
+                            <span class="material-icons">schedule</span>
+                            <span>Làm song song với Phase 1</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-actions mt-5">
+                   
+                    <button class="primary-btn ripple" onclick="nextSlide()">Xem Đề Xuất Giải Pháp <span class="material-icons">arrow_forward</span></button>
+                </div>
+            </div>
+        </section>
+
+        </section>
+
+        <!-- Slide 16: Options Evaluation -->
+        <section class="slide" id="slide-16">
+            <div class="slide-header">
+                <h2>Đánh Giá Các Đề Xuất & Lựa Chọn</h2>
+                <div class="slide-number">12</div>
+            </div>
+            <div class="slide-content">
+                <div class="options-grid">
+                    <!-- PA3 -->
+                    <div class="opt-card">
+                        <div class="opt-head">
+                            <span class="opt-badge bg-purple-light text-purple">PA3: In-Tool Widget</span>
+                        </div>
+                        <h4>  Tích Hợp Vào Tool</h4>
+                        <div class="opt-body">
+                            <div class="pros-list">
+                                <strong><span class="material-icons">add_circle</span> Ưu điểm</strong>
+                                <ul>
+                                    <li>Tiện nhất cho User đang online</li>
+                                    <li>Contextual Data (biết user đang ở trang nào)</li>
+                                </ul>
+                            </div>
+                            <div class="cons-list">
+                                <strong><span class="material-icons">remove_circle</span> Nhược điểm</strong>
+                                <ul>
+                                    <li>Dev tốn công maintain từng tool</li>
+                                    <li>User không vào tool thì "mù" thông tin</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PA2 -->
+                    <div class="opt-card">
+                        <div class="opt-head">
+                            <span class="opt-badge bg-green-light text-green">PA2: Feedback Gateway</span>
+                        </div>
+                        <h4>  Form Feedback Đơn Lẻ</h4>
+                        <div class="opt-body">
+                            <div class="pros-list">
+                                <strong><span class="material-icons">add_circle</span> Ưu điểm</strong>
+                                <ul>
+                                    <li>Triển khai cực nhanh (Google Form)</li>
+                                    <li>Không tốn dev resource</li>
+                                </ul>
+                            </div>
+                            <div class="cons-list">
+                                <strong><span class="material-icons">remove_circle</span> Nhược điểm</strong>
+                                <ul>
+                                    <li>User không tracking được tiến độ</li>
+                                    <li>Vẫn rời rạc, không có "nhà" (Home)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PA1 -->
+                    <div class="opt-card featured-opt">
+                        <div class="opt-head">
+                            <span class="opt-badge bg-blue text-white">PA1: User Hub (Portal)</span>
+                        </div>
+                        <h4>  Website Trung Tâm (Portal)</h4>
+                        <div class="opt-body">
+                            <div class="pros-list">
+                                <strong><span class="material-icons">add_circle</span> Ưu điểm</strong>
+                                <ul>
+                                    <li><strong>Single Source of Truth</strong></li>
+                                    <li>Giải quyết triệt để Touchpoint & Tracking</li>
+                                    <li>Scale được cho N tools</li>
+                                </ul>
+                            </div>
+                            <div class="cons-list">
+                                <strong><span class="material-icons">remove_circle</span> Nhược điểm</strong>
+                                <ul>
+                                    <li>Cần educate thói quen mới cho User</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="opt-verdict">
+                            <span class="material-icons">check_circle</span> CHỐT PHƯƠNG ÁN NÀY
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: Strategy Decision (Renumbered) -->
+        <section class="slide" id="slide-17">
+            <div class="slide-content center-content">
+                <div class="icon-circle bg-yellow-light text-yellow mb-4">
+                    <span class="material-icons" style="font-size: 48px;">flag</span>
+                </div>
+                <h2>Chốt Quyết Định Chiến Lược</h2>
+                <h1>Giải Pháp Trung Tâm: " UserHub"</h1>
+                <p class="subtitle">Không còn là "lựa chọn", đây là <strong>Single Source of Truth</strong> bắt buộc cho toàn hệ thống.</p>
+                
+                <div class="hub-strategy-grid">
+                    <div class="strategy-card">
+                        <div class="strat-icon"><span class="material-icons">hub</span></div>
+                        <h4>Single Entry</h4>
+                        <p>cho mọi Feedback</p>
+                    </div>
+                    <div class="strategy-divider">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                    <div class="strategy-card featured">
+                        <div class="strat-icon"><span class="material-icons">storage</span></div>
+                        <h4>USER HUB</h4>
+                        <p>Single Source of Truth</p>
+                    </div>
+                    <div class="strategy-divider">
+                        <span class="material-icons">arrow_forward</span>
+                    </div>
+                    <div class="strategy-card">
+                        <div class="strat-icon"><span class="material-icons">dashboard</span></div>
+                        <h4>Single View</h4>
+                        <p>cho Team Tracking</p>
+                    </div>
+                </div>
+
+                <div class="strategy-quote mt-4">
+                    "Nếu chỉ được làm <strong>1 thứ</strong> trong năm nay, thì <strong>UserHub</strong> là thứ đó."
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 18: Definition & Principles (Renumbered) -->
+        <section class="slide scrollable-slide" id="slide-18">
+            <div class="slide-header">
+                <h2>Định Nghĩa & Nguyên Tắc Thiết Kế</h2>
+                <div class="slide-number">13</div>
+            </div>
+            <div class="slide-content">
+                <div class="definition-wrapper">
+                    <div class="def-card is-not">
+                        <div class="def-header">
+                            <span class="material-icons">cancel</span>
+                            <h4>UserHub KHÔNG Phải</h4>
+                        </div>
+                        <ul class="def-list">
+                            <li>Trang Marketing màu mè</li>
+                            <li>Wiki khô khan khó hiểu</li>
+                            <li>Kho chứa link (Link dump)</li>
+                        </ul>
+                    </div>
+                    <div class="def-card is-what">
+                        <div class="def-header">
+                            <span class="material-icons">check_circle</span>
+                            <h4>UserHub CHÍNH LÀ</h4>
+                        </div>
+                        <ul class="def-list">
+                            <li><strong>Operating System</strong> cho giao tiếp</li>
+                            <li>Nơi User theo dõi sức khỏe Tool</li>
+                            <li>Nơi User feedback minh bạch</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>3 Nguyên Tắc Cốt Lõi</h3>
+                <div class="principles-grid">
+                    <div class="principle-card">
+                        <div class="p-number">1</div>
+                        <h4>User-Centric</h4>
+                        <p>Trả lời 3 câu hỏi của User:</p>
+                        <ul class="check-list">
+                            <li>Tool thay đổi gì?</li>
+                            <li>Ảnh hưởng gì tới tôi?</li>
+                            <li>Báo lỗi ở đâu?</li>
+                        </ul>
+                    </div>
+                    <div class="principle-card">
+                        <div class="p-number">2</div>
+                        <h4>Độc Lập Tool Usage</h4>
+                        <p>User không cần phải đang dùng tool mới feedback được. Truy cập được từ mọi nơi (Link, Bookmark).</p>
+                    </div>
+                    <div class="principle-card">
+                        <div class="p-number">3</div>
+                        <h4>Two-Way Loop</h4>
+                        <p>Thông tin không bao giờ đi một chiều:</p>
+                        <div class="loop-visual">
+                            Team <span class="material-icons">sync_alt</span> User
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: Problem Solving Map (Renumbered) -->
+        <section class="slide" id="slide-19">
+            <div class="slide-header">
+                <h2>UserHub Giải Quyết Vấn Đề Gì? (Pareto Mapping)</h2>
+                <div class="slide-number">14</div>
+            </div>
+            <div class="slide-content">
+                <div class="pareto-map-container">
+                    <div class="map-row">
+                        <div class="root-cause">
+                            <span class="rc-badge">RC2</span>
+                            <span>Không có điểm chạm (Touchpoint)</span>
+                        </div>
+                        <div class="map-arrow"><span class="material-icons">arrow_right_alt</span></div>
+                        <div class="hub-solution">
+                            <strong>UserHub = Điểm chạm chính thức</strong>
+                            <p>User luôn biết phải đi đâu, không còn lạc lối.</p>
+                        </div>
+                    </div>
+                    <div class="map-row">
+                        <div class="root-cause">
+                            <span class="rc-badge">RC1</span>
+                            <span>Update bị trôi / Spam</span>
+                        </div>
+                        <div class="map-arrow"><span class="material-icons">arrow_right_alt</span></div>
+                        <div class="hub-solution">
+                            <strong>Update tập trung & có cấu trúc</strong>
+                            <p>User chủ động xem (Pull) thay vì bị spam (Push).</p>
+                        </div>
+                    </div>
+                    <div class="map-row">
+                        <div class="root-cause">
+                            <span class="rc-badge">RC5</span>
+                            <span>Feedback phân mảnh</span>
+                        </div>
+                        <div class="map-arrow"><span class="material-icons">arrow_right_alt</span></div>
+                        <div class="hub-solution">
+                            <strong>Mọi dòng chảy đổ về UserHub</strong>
+                            <p>Dù báo ở đâu, đích đến cuối cùng là Hub.</p>
+                        </div>
+                    </div>
+                    <div class="map-row">
+                        <div class="root-cause">
+                            <span class="rc-badge">RC7</span>
+                            <span>PO không tracking được</span>
+                        </div>
+                        <div class="map-arrow"><span class="material-icons">arrow_right_alt</span></div>
+                        <div class="hub-solution">
+                            <strong>Dashboard sự thật</strong>
+                            <p>Đo lường được hiệu suất support và sức khỏe tool.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 20: System Structure (Renumbered) -->
+        <section class="slide scrollable-slide" id="slide-20">
+            <div class="slide-header">
+                <h2>Cấu Trúc UserHub: Phiên Bản Triển Khai</h2>
+                <div class="slide-number">15</div>
+            </div>
+            <div class="slide-content">
+                <div class="structure-visual">
+                    <!-- Home -->
+                    <div class="struct-block home-block">
+                        <div class="struct-head">
+                            <span class="material-icons">home</span> 1. TRANG HOME
+                        </div>
+                        <div class="struct-body">
+                            <p class="struct-question">"Tôi nên xem gì ở đây?"</p>
+                            <ul>
+                                <li>🔔 Latest Updates (Toàn hệ thống)</li>
+                                <li>⚠️ Issues đang ảnh hưởng (Sự cố)</li>
+                                <li>🎯 Link feedback nhanh</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="struct-row">
+                        <!-- Tool Pages -->
+                        <div class="struct-block sub-block">
+                            <div class="struct-head">
+                                <span class="material-icons">pages</span> 2. TOOL PAGES
+                            </div>
+                            <div class="struct-body">
+                                <ul>
+                                    <li>Mô tả & Trạng thái (Active/Beta)</li>
+                                    <li>Changelog riêng từng tool</li>
+                                    <li>Known Issues</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Changelog -->
+                        <div class="struct-block sub-block">
+                            <div class="struct-head">
+                                <span class="material-icons">history_edu</span> 3. CHANGELOG
+                            </div>
+                            <div class="struct-body">
+                                <ul>
+                                    <li><strong>What:</strong> Thay đổi gì</li>
+                                    <li><strong>Who:</strong> Ai bị ảnh hưởng</li>
+                                    <li><strong>Action:</strong> Cần làm gì?</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="struct-row">
+                        <!-- Feedback Center -->
+                        <div class="struct-block key-block">
+                            <div class="struct-head">
+                                <span class="material-icons">feedback</span> 4. FEEDBACK CENTER (Xương Sống)
+                            </div>
+                            <div class="struct-body">
+                                <p><strong>Minh bạch trạng thái:</strong></p>
+                                <div class="status-steps">
+                                    <span class="st-step">Received</span> →
+                                    <span class="st-step">In Review</span> →
+                                    <span class="st-step">Planned</span> →
+                                    <span class="st-step done">Done</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dashboard -->
+                        <div class="struct-block internal-block">
+                            <div class="struct-head">
+                                <span class="material-icons">admin_panel_settings</span> 5. INTERNAL DASHBOARD
+                            </div>
+                            <div class="struct-body">
+                                <p>Dành cho Team:</p>
+                                <ul>
+                                    <li>Số feedback theo tool</li>
+                                    <li>Top vấn đề lặp lại</li>
+                                    <li>Thời gian phản hồi</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 21: Roles & Risks (Renumbered) -->
+        <section class="slide scrollable-slide" id="slide-21">
+            <div class="slide-header">
+                <h2>Định Nghĩa Lại Vai Trò & Kiểm Soát Rủi Ro</h2>
+                <div class="slide-number">16</div>
+            </div>
+            <div class="slide-content">
+                <div class="roles-wrapper mb-5">
+                    <div class="role-new-card discord-style">
+                        <div class="role-header">
+                            <span class="material-icons">campaign</span>
+                            <h4>Vai Trò Mới Của DISCORD</h4>
+                        </div>
+                        <div class="role-body">
+                            <div class="role-item bad">
+                                <span class="material-icons">close</span> <s>Nơi cập nhật chính thức</s>
+                            </div>
+                            <div class="role-item good">
+                                <span class="material-icons">check</span> <strong>Notification Layer</strong>
+                            </div>
+                            <p class="role-note">Chỉ dùng để nhắc: "Đã có update trên Hub"</p>
+                        </div>
+                    </div>
+                    <div class="role-new-card internal-style">
+                        <div class="role-header">
+                            <span class="material-icons">people</span>
+                            <h4>Vai Trò Mới Của STAKEHOLDER</h4>
+                        </div>
+                        <div class="role-body">
+                            <div class="role-item bad">
+                                <span class="material-icons">close</span> <s>Bộ lọc thông tin</s>
+                            </div>
+                            <div class="role-item good">
+                                <span class="material-icons">check</span> <strong>Người dẫn đường</strong>
+                            </div>
+                            <p class="role-note">Direct user về UserHub, không làm bottleneck.</p>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="risks-list">
+                    <div class="risk-item">
+                        <div class="risk-problem">
+                            <span class="material-icons">warning</span> User không vào Hub
+                        </div>
+                        <div class="risk-solution">
+                            → Link ở mọi nơi, Stakeholder/Dev cương quyết <strong>Redirect</strong> (không trả lời riêng).
+                        </div>
+                    </div>
+                    <div class="risk-item">
+                        <div class="risk-problem">
+                            <span class="material-icons">update_disabled</span> Team lười update
+                        </div>
+                        <div class="risk-solution">
+                            → Coi Update là <strong>"Definition of Done"</strong>. Chưa update = Chưa xong task.
+                        </div>
+                    </div>
+                    <div class="risk-item">
+                        <div class="risk-problem">
+                            <span class="material-icons">auto_delete</span> Hub thành "Wiki chết"
+                        </div>
+                        <div class="risk-solution">
+                            → Update ngắn gọn, đúng trọng tâm. Feedback phải có phản hồi thật để giữ niềm tin.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 22: Closing (Renumbered) -->
+        <section class="slide" id="slide-22">
+            <div class="slide-content center-content">
+                <div class="icon-circle bg-blue mb-4 text-white">
+                    <span class="material-icons" style="font-size: 48px;">psychology</span>
+                </div>
+                <h1>Lời Kết Chiến Lược</h1>
+                <div class="closing-statement">
+                    "UserHub không phải để <em>thông báo</em>,<br>
+                    mà để <strong>thiết lập lại mối quan hệ</strong> giữa<br>
+                    <span class="highlight">Tool</span> ↔ <span class="highlight">User</span> ↔ <span class="highlight">Team</span>."
+                </div>
+                <button class="secondary-btn ripple mt-5" onclick="location.reload()">Xem Lại Từ Đầu</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
